@@ -1,51 +1,79 @@
-import random
-from data import questions
+# main.py
+import time
+from data import question_data
+from models import Question
 
-def get_grade(score, total):
-    """점수에 따른 등급 메시지를 반환합니다."""
-    percentage = (score / total) * 100
+# --- 기능 함수들 ---
+
+def load_high_score():
+    """파일에서 최고 점수를 읽어옵니다."""
+    try:
+        with open("highscore.txt", "r") as file:
+            return int(file.read())
+    except (FileNotFoundError, ValueError):
+        return 0
+
+def save_high_score(score):
+    """파일에 최고 점수를 저장합니다."""
+    with open("highscore.txt", "w") as file:
+        file.write(str(score))
+
+def start_quiz():
+    high_score = load_high_score()
+    print(f"🏆 현재 최고 점수: {high_score}점")
     
-    if percentage == 100:
-        return "천재! 만점입니다! 🏆"
-    elif percentage >= 70:
-        return "정말 잘하시네요! 👍"
-    elif percentage >= 40:
-        return "나쁘지 않아요! 😊"
-    else:
-        return "조금 더 공부하면 좋을 것 같아요! 📚"
+    # 1. 난이도 선택 및 필터링
+    choice = input("난이도를 선택하세요 (easy, normal, hard): ").lower()
+    
+    # 리스트 컴프리헨션으로 선택한 난이도 문제만 객체로 만듦
+    question_bank = [
+        Question(q["text"], q["answer"], q["difficulty"]) 
+        for q in question_data if q["difficulty"] == choice
+    ]
 
-def run_quiz(questions_list):
+    if not question_bank:
+        print("해당 난이도의 문제가 없습니다. 다시 실행해 주세요.")
+        return
+
     score = 0
-    # 매 게임마다 문제 순서를 섞어줍니다.
-    random.shuffle(questions_list)
-    
-    print("\n" + "="*30)
-    print("   🌟 퀴즈 게임을 시작합니다! 🌟")
-    print("="*30)
-    
-    for i, q in enumerate(questions_list):
-        print(f"\n{i+1}번 문제:")
-        answer = input(q.prompt)
+    time_limit = 5 # 제한 시간 5초
+
+    # 2. 게임 루프
+    for i, question in enumerate(question_bank):
+        print(f"\nQ{i+1}. {question.text}")
         
-        if answer.lower() == q.answer:
-            print("정답입니다! ✨")
+        start_time = time.time() # 시간 측정 시작
+        user_answer = input(f"정답(O/X) 입력 [제한시간 {time_limit}초]: ").upper()
+        end_time = time.time()   # 시간 측정 종료
+        
+        taken_time = end_time - start_time
+
+        # 3. 타임어택 체크
+        if taken_time > time_limit:
+            print(f"⏰ 시간 초과! ({taken_time:.2f}초 소요) 오답 처리됩니다.")
+            continue
+
+        # 4. 정답 체크
+        if user_answer == question.answer:
+            print(f"✅ 정답입니다! ({taken_time:.2f}초 소요)")
             score += 1
         else:
-            print(f"아쉽네요. 틀렸습니다. (정답: {q.answer})")
-        
-    # 결과 출력
-    total = len(questions_list)
-    print("\n" + "="*30)
-    print(f"게임 종료! 당신의 점수는 {score}/{total}점입니다.")
-    print(f"평가: {get_grade(score, total)}")
-    print("="*30 + "\n")
+            print(f"❌ 틀렸습니다! (소요 시간: {taken_time:.2f}초)")
 
+    # 3. 결과 발표 및 최고 점수 저장
+    print(f"\n--- 게임 종료 ---")
+    print(f"최종 점수: {score} / {len(question_bank)}")
+
+    if score > high_score:
+        print("🎊 축하합니다! 최고 점수를 경신했습니다!")
+        save_high_score(score)
+    else:
+        print(f"최고 점수({high_score}점) 경신에 실패했습니다. 다음 기회에!")
+
+# 게임 실행
 if __name__ == "__main__":
     while True:
-        run_quiz(questions)
-        
-        # 다시 시작 여부 묻기
-        play_again = input("게임을 다시 하시겠습니까? (y/n): ").lower()
-        if play_again != 'y':
-            print("\n게임을 이용해 주셔서 감사합니다. 안녕히 가세요! 👋")
+        start_quiz()
+        if input("\n다시 하시겠습니까? (Y/N): ").upper() != "Y":
+            print("게임을 종료합니다. 감사합니다!")
             break
