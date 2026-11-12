@@ -1,119 +1,60 @@
 import json
-import random
 import os
 
-# 파일 경로 설정
-FILE_PATH = "wordbook.json"
+class Wordbook:
+    def __init__(self, filename="words.json"):
+        """생성자: 단어장 객체가 만들어질 때 파일을 자동으로 불러옵니다."""
+        self.filename = filename
+        self.words = self.load_data()
 
-# 단어장 불러오기
-def load_wordbook():
-    if os.path.exists(FILE_PATH):
-        with open(FILE_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {}
+    def load_data(self):
+        """파일에서 단어 데이터를 불러오는 메서드"""
+        if os.path.exists(self.filename):
+            with open(self.filename, "r", encoding="utf-8") as f:
+                return json.load(f)
+        return {}  # 파일이 없으면 빈 딕셔너리 반환
 
-# 단어장 저장하기
-def save_wordbook(wordbook):
-    with open(FILE_PATH, "w", encoding="utf-8") as f:
-        json.dump(wordbook, f, ensure_ascii=False, indent=4)
+    def save_data(self):
+        """현재 단어 상태를 파일에 저장하는 메서드"""
+        with open(self.filename, "w", encoding="utf-8") as f:
+            json.dump(self.words, f, ensure_ascii=False, indent=4)
 
-# 1. 단어 추가
-def add_word(wordbook):
-    word = input("추가할 영단어를 입력하세요: ").strip()
-    mean = input(f"'{word}'의 뜻을 입력하세요: ").strip()
-    wordbook[word] = mean
-    save_wordbook(wordbook)
-    print(f"'{word}' 단어가 추가되었습니다.")
+    def add_word(self):
+        """단어 추가 메서드"""
+        eng = input("추가할 영어 단어: ").strip()
+        kor = input("뜻: ").strip()
+        self.words[eng] = kor
+        self.save_data()
+        print(f"✅ '{eng}' 단어가 추가되었습니다.")
 
-# 2. 단어 목록 보기
-def show_list(wordbook):
-    if not wordbook:
-        print("\n단어장이 비어 있습니다.")
-        return
-    print("\n--- 단어 목록 ---")
-    for word, mean in wordbook.items():
-        print(f"{word} : {mean}")
+    def show_all(self):
+        """전체 목록 출력 메서드"""
+        if not self.words:
+            print("📭 단어장이 비어 있습니다.")
+            return
+        
+        print("\n--- 단어 목록 ---")
+        for eng, kor in self.words.items():
+            print(f"{eng} : {kor}")
+        print("----------------")
 
-# 3. 단어 검색
-def search_word(wordbook):
-    word = input("검색할 단어를 입력하세요: ").strip()
-    if word in wordbook:
-        print(f"결과: {word} - {wordbook[word]}")
-    else:
-        print("찾는 단어가 없습니다.")
-
-# 4. 단어 삭제
-def delete_word(wordbook):
-    word = input("삭제할 단어를 입력하세요: ").strip()
-    if word in wordbook:
-        del wordbook[word]
-        save_wordbook(wordbook)
-        print(f"'{word}' 단어가 삭제되었습니다.")
-    else:
-        print("삭제할 단어가 없습니다.")
-
-# 5. [업데이트된 기능] 퀴즈 실행 (3문제 연속 풀기)
-def run_quiz(wordbook):
-    if len(wordbook) < 3:
-        print("\n[알림] 퀴즈를 진행하려면 단어가 최소 3개 이상 필요합니다.")
-        return
-
-    print(f"\n--- 챌린지 퀴즈 시작! (총 3문제) ---")
-    score = 0
-    
-    # 무작위로 3개 추출
-    quiz_samples = random.sample(list(wordbook.items()), 3)
-
-    for i, (word, mean) in enumerate(quiz_samples, 1):
-        print(f"\n[{i}번 문제] '{word}'의 뜻은 무엇일까요?")
-        answer = input("답변: ").strip()
-
-        if answer == mean:
-            print("정답입니다! ✨")
-            score += 1
-        else:
-            print(f"틀렸습니다. 정답은 '{mean}'입니다. 😅")
-
-    print(f"\n--- 퀴즈 종료 ---")
-    print(f"결과: 3문제 중 {score}문제를 맞혔습니다!")
-    
-    if score == 3:
-        print("와우! 완벽해요! 💯")
-    elif score >= 1:
-        print("잘하셨어요! 조금만 더 힘내세요! 💪")
-    else:
-        print("다시 한번 복습해볼까요? 열공! 🔥")
-
-# 메인 메뉴
+# --- 프로그램 실행부 ---
 def main():
-    wordbook = load_wordbook()
-    
+    # 1. Wordbook 객체 생성 (이때 자동으로 데이터를 불러옴)
+    my_book = Wordbook()
+
     while True:
-        print("\n--- 영단어장 프로그램 ---")
-        print("1. 단어 추가")
-        print("2. 단어 목록")
-        print("3. 단어 검색")
-        print("4. 단어 삭제")
-        print("5. 퀴즈 풀기")
-        print("6. 종료")
-        
-        choice = input("원하는 메뉴 번호를 선택하세요: ")
-        
-        if choice == '1':
-            add_word(wordbook)
-        elif choice == '2':
-            show_list(wordbook)
-        elif choice == '3':
-            search_word(wordbook)
-        elif choice == '4':
-            delete_word(wordbook)
-        elif choice == '5':
-            run_quiz(wordbook)
-        elif choice == '6':
-            print("프로그램을 종료합니다. 열공하세요!")
+        menu = input("\n1.추가 2.목록 3.종료 : ")
+
+        if menu == "1":
+            my_book.add_word()
+        elif menu == "2":
+            my_book.show_all()
+        elif menu == "3":
+            print("프로그램을 종료합니다.")
             break
         else:
-            print("잘못된 선택입니다. 다시 입력해주세요.")
+            print("잘못된 선택입니다.")
 
 if __name__ == "__main__":
     main()
