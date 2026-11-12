@@ -115,3 +115,80 @@ def main_menu():
 
 if __name__ == "__main__":
     main_menu()
+
+    import random  # 문제를 섞기 위해 필요해요
+
+class Question:
+    def __init__(self, prompt, answer):
+        self.prompt = prompt
+        self.answer = answer
+
+# 문제 목록
+question_prompts = [
+    "1. 사과는 무슨 색인가요?\n(a) 빨강\n(b) 보라\n\n",
+    "2. 바나나는 무슨 색인가요?\n(a) 초록\n(b) 노랑\n\n",
+    "3. 파이썬에서 화면에 글자를 출력하는 함수는?\n(a) input\n(b) print\n\n",
+    "4. 파이썬 파일의 확장자는?\n(a) .py\n(b) .txt\n\n",
+    "5. 리스트의 길이를 잴 때 사용하는 함수는?\n(a) len\n(b) size\n\n"
+]
+
+questions = [
+    Question(question_prompts[0], "a"),
+    Question(question_prompts[1], "b"),
+    Question(question_prompts[2], "b"),
+    Question(question_prompts[3], "a"),
+    Question(question_prompts[4], "a"),
+]
+
+def run_quiz(questions):
+    # [추가] 문제 순서 섞기
+    random.shuffle(questions)
+    
+    score = 0
+    for question in questions:
+        answer = input(question.prompt)
+        if answer.lower() == question.answer:
+            print("정답입니다! ✨")
+            score += 1
+        else:
+            print(f"아쉽네요. 틀렸습니다. (정답: {question.answer}) ❌")
+    
+    print(f"\n당신의 점수는 {len(questions)}점 만점에 {score}점입니다!")
+    
+    # [추가] 최고 점수 확인 및 저장
+    save_high_score(score)
+
+def save_high_score(current_score):
+    try:
+        # 기존 최고 점수 읽어오기
+        with open("highscore.txt", "r") as f:
+            high_score = int(f.read())
+    except FileNotFoundError:
+        # 파일이 없으면 0점으로 시작
+        high_score = 0
+
+    if current_score > high_score:
+        print(f"🎊 축하합니다! 새로운 최고 기록입니다: {current_score}점")
+        with open("highscore.txt", "w") as f:
+            f.write(str(current_score))
+    else:
+        print(f"현재 최고 기록은 {high_score}점입니다. 더 힘내세요!")
+
+def main_menu():
+    while True:
+        print("\n=== 파이썬 퀴즈 게임 v3.0 ===")
+        print("1. 게임 시작")
+        print("2. 종료")
+        
+        choice = input("번호를 선택하세요: ")
+        
+        if choice == "1":
+            run_quiz(questions)
+        elif choice == "2":
+            print("게임을 종료합니다. 즐거웠어요! 👋")
+            break
+        else:
+            print("잘못된 입력입니다.")
+
+if __name__ == "__main__":
+    main_menu()
