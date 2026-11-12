@@ -192,3 +192,39 @@ def main_menu():
 
 if __name__ == "__main__":
     main_menu()
+
+import random
+import time  # 1. 시간 측정을 위해 추가
+
+# ... (Question 클래스와 questions 리스트는 그대로 둡니다) ...
+
+def run_quiz(questions):
+    random.shuffle(questions)
+    score = 0
+    limit_time = 5  # 2. 각 문제당 제한 시간 (5초)
+    
+    print(f"\n🚀 타임 어택 모드! 문제당 제한 시간은 {limit_time}초입니다.")
+    
+    for question in questions:
+        print("-" * 30)
+        start_time = time.time()  # 3. 질문 시작 시간 기록
+        
+        answer = input(question.prompt)
+        
+        end_time = time.time()    # 4. 답변 완료 시간 기록
+        elapsed_time = end_time - start_time  # 걸린 시간 계산
+        
+        if elapsed_time > limit_time:
+            print(f"⏰ 시간 초과! ({elapsed_time:.1f}초 소요)")
+            print(f"아쉽지만 너무 늦어서 오답 처리됩니다. (정답: {question.answer})")
+        elif answer.lower() == question.answer:
+            print(f"정답입니다! ✨ ({elapsed_time:.1f}초 만에 맞히셨어요!)")
+            score += 1
+        else:
+            print(f"아쉽네요. 틀렸습니다. (정답: {question.answer}) ❌")
+    
+    print(f"\n당신의 최종 점수는 {len(questions)}점 만점에 {score}점입니다!")
+    save_high_score(score)
+
+# ... (나머지 save_high_score, main_menu 함수는 동일) ...
+
