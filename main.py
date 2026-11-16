@@ -10,6 +10,8 @@ class QuizGame:
         self.total = 0
         self.played = False
         self.save_file = "quizzes.json"
+        # ✅ 카테고리 목록 추가
+        self.categories = ["Python", "수학", "영어", "상식", "기타"]
         self.load_quizzes()
 
     def validate_input(self, value, field_name):
@@ -36,12 +38,26 @@ class QuizGame:
                 print(f"불러오기 실패: {e}")
                 self.quizzes = []
 
+    def select_category(self):
+        # ✅ 카테고리 선택 메서드 추가
+        print("\n카테고리를 선택하세요:")
+        for i, cat in enumerate(self.categories, 1):
+            print(f"  {i}. {cat}")
+        while True:
+            choice = input("번호 입력: ").strip()
+            if choice.isdigit() and 1 <= int(choice) <= len(self.categories):
+                return self.categories[int(choice) - 1]
+            print(f"오류: 1~{len(self.categories)} 사이의 숫자를 입력해주세요.")
+
     def add_quiz(self):
         print("\n=== 퀴즈 추가 ===")
 
         question = input("문제를 입력하세요: ")
         if not self.validate_input(question, "문제"):
             return
+
+        # ✅ 카테고리 선택 추가
+        category = self.select_category()
 
         options = []
         for i in range(1, 5):
@@ -58,11 +74,12 @@ class QuizGame:
 
         self.quizzes.append({
             "question": question,
+            "category": category,   # ✅ 카테고리 저장
             "options": options,
             "answer": int(answer)
         })
         self.save_quizzes()
-        print("퀴즈가 추가되었습니다!")
+        print(f"[{category}] 카테고리에 퀴즈가 추가되었습니다!")
 
     def get_hint(self, quiz):
         answer_idx = quiz["answer"] - 1
@@ -76,12 +93,32 @@ class QuizGame:
             return
 
         print("\n=== 퀴즈 시작 ===")
-        quiz_list = random.sample(self.quizzes, len(self.quizzes))
+
+        # ✅ 카테고리 필터링 추가
+        print("전체 퀴즈로 풀까요, 카테고리별로 풀까요?")
+        print("  1. 전체")
+        print("  2. 카테고리 선택")
+        mode = input("번호 입력: ").strip()
+
+        if mode == "2":
+            category = self.select_category()
+            quiz_list = [q for q in self.quizzes
+                         if q.get("category") == category]
+            if not quiz_list:
+                print(f"[{category}] 카테고리에 퀴즈가 없습니다.")
+                return
+            print(f"[{category}] 카테고리 퀴즈 {len(quiz_list)}개를 풀겠습니다!")
+        else:
+            quiz_list = self.quizzes[:]
+
+        quiz_list = random.sample(quiz_list, len(quiz_list))
         score = 0
         wrong_list = []
 
         for i, quiz in enumerate(quiz_list, 1):
-            print(f"\nQ{i}. {quiz['question']}")
+            # ✅ 카테고리 표시
+            cat_label = quiz.get("category", "기타")
+            print(f"\nQ{i}. [{cat_label}] {quiz['question']}")
             for j, option in enumerate(quiz['options'], 1):
                 print(f"  {j}. {option}")
 
@@ -128,7 +165,8 @@ class QuizGame:
             with open("wrong_notes.json", "r", encoding="utf-8") as f:
                 wrong_list = json.load(f)
             for i, quiz in enumerate(wrong_list, 1):
-                print(f"\nQ{i}. {quiz['question']}")
+                cat_label = quiz.get("category", "기타")
+                print(f"\nQ{i}. [{cat_label}] {quiz['question']}")
                 for j, option in enumerate(quiz['options'], 1):
                     print(f"  {j}. {option}")
                 print(f"  정답: {quiz['answer']}번")
@@ -149,43 +187,37 @@ class QuizGame:
             print("등록된 퀴즈가 없습니다.")
             return
         for i, quiz in enumerate(self.quizzes, 1):
-            print(f"\nQ{i}. {quiz['question']}")
-            for j, option in enumerate(quiz['options'], 1):
-                print(f"  {j}. {option}")
-            print(f"  정답: {quiz['answer']}번")
+            cat_label = quiz.get("category", "기타")
+            # ✅ 카테고리 함께 표시
+            print(f"\nQ{i}. [{cat_label}] {quiz['question']}")
 
-    def run(self):
-        print("퀴즈 게임에 오신 것을 환영합니다!")
 
-        while True:
-            print("\n=== 메뉴 ===")
-            print("1. 퀴즈 풀기")
-            print("2. 퀴즈 추가")
-            print("3. 퀴즈 목록 보기")
-            print("4. 점수 확인")
-            print("5. 오답 노트 보기")
-            print("6. 종료")
-
-            choice = input("\n메뉴를 선택하세요(1~6): ")
-
-            if choice == "1":
-                self.play_quiz()
-            elif choice == "2":
-                self.add_quiz()
-            elif choice == "3":
-                self.show_quizzes()
-            elif choice == "4":
-                self.show_score()
-            elif choice == "5":
-                self.show_wrong_notes()
-            elif choice == "6":
-                print("게임을 종료합니다. 수고하셨습니다!")
-                break
-            else:
-                print("오류: 1~6 사이의 숫자를 입력해주세요.")
-
-            input("\n계속하려면 Enter를 눌러주세요...")
+def main():
+    game = QuizGame()
+    while True:
+        print("\n=== 퀴즈 게임 메뉴 ===")
+        print("1. 퀴즈 풀기")
+        print("2. 퀴즈 추가")
+        print("3. 퀴즈 목록")
+        print("4. 점수 확인")
+        print("5. 오답 노트")
+        print("6. 종료")
+        choice = input("메뉴를 선택하세요: ").strip()
+        if choice == "1":
+            game.play_quiz()
+        elif choice == "2":
+            game.add_quiz()
+        elif choice == "3":
+            game.show_quizzes()
+        elif choice == "4":
+            game.show_score()
+        elif choice == "5":
+            game.show_wrong_notes()
+        elif choice == "6":
+            print("게임을 종료합니다.")
+            break
+        else:
+            print("오류: 1~6 사이의 숫자를 입력해주세요.")
 
 if __name__ == "__main__":
-    game = QuizGame()
-    game.run()
+    main()
