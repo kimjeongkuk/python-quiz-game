@@ -10,8 +10,9 @@ class QuizGame:
         self.total = 0
         self.played = False
         self.save_file = "quizzes.json"
-        # ✅ 카테고리 목록 추가
         self.categories = ["Python", "수학", "영어", "상식", "기타"]
+        # ✅ 난이도 목록 추가
+        self.difficulties = ["쉬움", "보통", "어려움"]
         self.load_quizzes()
 
     def validate_input(self, value, field_name):
@@ -39,7 +40,6 @@ class QuizGame:
                 self.quizzes = []
 
     def select_category(self):
-        # ✅ 카테고리 선택 메서드 추가
         print("\n카테고리를 선택하세요:")
         for i, cat in enumerate(self.categories, 1):
             print(f"  {i}. {cat}")
@@ -49,6 +49,17 @@ class QuizGame:
                 return self.categories[int(choice) - 1]
             print(f"오류: 1~{len(self.categories)} 사이의 숫자를 입력해주세요.")
 
+    def select_difficulty(self):
+        # ✅ 난이도 선택 메서드 추가
+        print("\n난이도를 선택하세요:")
+        for i, diff in enumerate(self.difficulties, 1):
+            print(f"  {i}. {diff}")
+        while True:
+            choice = input("번호 입력: ").strip()
+            if choice.isdigit() and 1 <= int(choice) <= len(self.difficulties):
+                return self.difficulties[int(choice) - 1]
+            print(f"오류: 1~{len(self.difficulties)} 사이의 숫자를 입력해주세요.")
+
     def add_quiz(self):
         print("\n=== 퀴즈 추가 ===")
 
@@ -56,8 +67,9 @@ class QuizGame:
         if not self.validate_input(question, "문제"):
             return
 
-        # ✅ 카테고리 선택 추가
         category = self.select_category()
+        # ✅ 난이도 선택 추가
+        difficulty = self.select_difficulty()
 
         options = []
         for i in range(1, 5):
@@ -74,12 +86,13 @@ class QuizGame:
 
         self.quizzes.append({
             "question": question,
-            "category": category,   # ✅ 카테고리 저장
+            "category": category,
+            "difficulty": difficulty,  # ✅ 난이도 저장
             "options": options,
             "answer": int(answer)
         })
         self.save_quizzes()
-        print(f"[{category}] 카테고리에 퀴즈가 추가되었습니다!")
+        print(f"[{category} / {difficulty}] 퀴즈가 추가되었습니다!")
 
     def get_hint(self, quiz):
         answer_idx = quiz["answer"] - 1
@@ -94,31 +107,46 @@ class QuizGame:
 
         print("\n=== 퀴즈 시작 ===")
 
-        # ✅ 카테고리 필터링 추가
-        print("전체 퀴즈로 풀까요, 카테고리별로 풀까요?")
+        # ✅ 난이도 필터링 추가
+        print("난이도를 선택하시겠습니까?")
+        print("  1. 전체")
+        print("  2. 난이도 선택")
+        diff_mode = input("번호 입력: ").strip()
+
+        if diff_mode == "2":
+            difficulty = self.select_difficulty()
+            quiz_list = [q for q in self.quizzes
+                         if q.get("difficulty") == difficulty]
+            if not quiz_list:
+                print(f"[{difficulty}] 난이도에 퀴즈가 없습니다.")
+                return
+            print(f"[{difficulty}] 난이도 퀴즈 {len(quiz_list)}개를 풀겠습니다!")
+        else:
+            quiz_list = self.quizzes[:]
+
+        print("\n카테고리를 선택하시겠습니까?")
         print("  1. 전체")
         print("  2. 카테고리 선택")
-        mode = input("번호 입력: ").strip()
+        cat_mode = input("번호 입력: ").strip()
 
-        if mode == "2":
+        if cat_mode == "2":
             category = self.select_category()
-            quiz_list = [q for q in self.quizzes
+            quiz_list = [q for q in quiz_list
                          if q.get("category") == category]
             if not quiz_list:
                 print(f"[{category}] 카테고리에 퀴즈가 없습니다.")
                 return
             print(f"[{category}] 카테고리 퀴즈 {len(quiz_list)}개를 풀겠습니다!")
-        else:
-            quiz_list = self.quizzes[:]
 
         quiz_list = random.sample(quiz_list, len(quiz_list))
         score = 0
         wrong_list = []
 
         for i, quiz in enumerate(quiz_list, 1):
-            # ✅ 카테고리 표시
             cat_label = quiz.get("category", "기타")
-            print(f"\nQ{i}. [{cat_label}] {quiz['question']}")
+            diff_label = quiz.get("difficulty", "보통")
+            # ✅ 카테고리 + 난이도 함께 표시
+            print(f"\nQ{i}. [{cat_label} / {diff_label}] {quiz['question']}")
             for j, option in enumerate(quiz['options'], 1):
                 print(f"  {j}. {option}")
 
@@ -166,7 +194,8 @@ class QuizGame:
                 wrong_list = json.load(f)
             for i, quiz in enumerate(wrong_list, 1):
                 cat_label = quiz.get("category", "기타")
-                print(f"\nQ{i}. [{cat_label}] {quiz['question']}")
+                diff_label = quiz.get("difficulty", "보통")
+                print(f"\nQ{i}. [{cat_label} / {diff_label}] {quiz['question']}")
                 for j, option in enumerate(quiz['options'], 1):
                     print(f"  {j}. {option}")
                 print(f"  정답: {quiz['answer']}번")
@@ -188,8 +217,9 @@ class QuizGame:
             return
         for i, quiz in enumerate(self.quizzes, 1):
             cat_label = quiz.get("category", "기타")
-            # ✅ 카테고리 함께 표시
-            print(f"\nQ{i}. [{cat_label}] {quiz['question']}")
+            diff_label = quiz.get("difficulty", "보통")
+            # ✅ 카테고리 + 난이도 함께 표시
+            print(f"\nQ{i}. [{cat_label} / {diff_label}] {quiz['question']}")
 
 
 def main():
