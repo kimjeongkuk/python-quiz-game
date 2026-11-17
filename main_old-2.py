@@ -15,7 +15,7 @@ class QuizSystem:
             try:
                 with open(filename, 'r', encoding='utf-8') as f:
                     return json.load(f)
-            except:
+            except Exception:
                 return []
         return []
 
@@ -25,41 +25,33 @@ class QuizSystem:
 
     def run_quiz(self):
         if not self.quizzes:
-            print("\n[알림] 퀴즈가 없습니다. 2번 메뉴에서 퀴즈를 먼저 추가해주세요!")
+            print("\n[알림] 등록된 퀴즈가 없습니다. 2번 메뉴에서 추가해주세요.")
             return
 
         score = 0
         wrong_data = self.load_json(self.wrong_file)
         
-        for quiz in self.quizzes:
-            print(f"\n질문: {quiz['question']}")
+        for i, quiz in enumerate(self.quizzes, 1):
+            print(f"\nQ{i}. {quiz['question']}")
             
-            # --- 선택지 출력 부분 (번호가 없어도 강제로 붙여서 출력) ---
-            for i, opt in enumerate(quiz['options'], 1):
-                # 이미 '1.' 같은 번호가 포함되어 있는지 확인 후 출력
-                opt_str = str(opt)
-                if opt_str.startswith(f"{i}."):
-                    print(opt_str)
-                else:
-                    print(f"{i}. {opt_str}")
-            # ------------------------------------------------------
+            # Print options with numbers
+            for number, opt in enumerate(quiz['options']):
+                print(f"{number + 1}. {opt}")
             
-            ans = input("정답 번호 입력: ").strip()
+            ans = input("정답 번호 입력 (1~4): ").strip()
             
             if str(ans) == str(quiz['answer']):
-                print(">> 정답입니다! ✨")
+                print(">> 정답입니다!")
                 score += 1
-                # 맞혔으면 오답노트에서 제거
+                # Remove from wrong answers if answered correctly
                 wrong_data = [q for q in wrong_data if q['question'] != quiz['question']]
             else:
-                print(f">> 오답! 정답은 {quiz['answer']}번입니다. ❌")
-                # 틀렸으면 오답노트에 추가
+                print(f">> 오답! 정답은 {quiz['answer']}번입니다.")
+                # Add to wrong answers avoiding duplicates
                 if not any(q['question'] == quiz['question'] for q in wrong_data):
                     wrong_data.append(quiz)
 
         self.save_json(self.wrong_file, wrong_data)
-        
-        # 점수 계산 및 저장
         final_score = (score / len(self.quizzes)) * 100
         self.score_history.append(f"{final_score:.1f}점")
         self.save_json(self.score_file, self.score_history)
@@ -68,14 +60,20 @@ class QuizSystem:
 
     def add_quiz(self):
         print("\n--- 새 퀴즈 추가 ---")
-        question = input("질문 내용: ")
+        question = input("질문 내용: ").strip()
+        if not question:
+            print("오류: 질문 내용을 입력해주세요.")
+            return
+
         options = []
         for i in range(1, 5):
-            # 입력받을 때 번호는 빼고 내용만 입력받음
-            opt_text = input(f"{i}번 선택지 내용: ")
-            options.append(opt_text) # 순수한 내용만 저장
+            opt_text = input(f"{i}번 선택지 내용: ").strip()
+            options.append(f"{i}. {opt_text}")
             
-        answer = input("정답 번호(1, 2, 3, 4 중 하나): ").strip()
+        answer = input("정답 번호 (1~4): ").strip()
+        if answer not in ["1", "2", "3", "4"]:
+            print("오류: 정답은 1~4 사이의 숫자여야 합니다.")
+            return
         
         self.quizzes.append({
             "question": question,
@@ -83,12 +81,14 @@ class QuizSystem:
             "answer": answer
         })
         self.save_json(self.quiz_file, self.quizzes)
-        print("퀴즈가 성공적으로 저장되었습니다!")
+        print("퀴즈가 성공적으로 저장되었습니다.")
 
     def list_quizzes(self):
         print("\n--- 퀴즈 목록 ---")
+        self.quizzes = self.load_json(self.quiz_file)
         if not self.quizzes:
             print("등록된 퀴즈가 없습니다.")
+            return
         for i, q in enumerate(self.quizzes, 1):
             print(f"{i}. {q['question']}")
 
@@ -105,27 +105,41 @@ class QuizSystem:
         print("\n--- 오답 노트 ---")
         wrong_data = self.load_json(self.wrong_file)
         if not wrong_data:
-            print("오답 노트가 비어 있습니다. 아주 훌륭해요! 🎉")
-        else:
-            for i, q in enumerate(wrong_data, 1):
-                print(f"{i}. {q['question']}")
-                # 오답 노트에서도 선택지 번호를 강제로 붙여서 보여줌
-                for j, opt in enumerate(q['options'], 1):
-                    print(f"   {j}. {opt}")
-                print(f"   => 정답: {q['answer']}번")
+            print("오답 노트가 비어 있습니다. 모두 맞히셨네요! 🎉")
+            return
+            
+        for i, q in enumerate(wrong_data, 1):
+            print(f"\nQ{i}. {q['question']}")
+            for opt in q['options']:
+                print(opt)
+            print(f">> 정답: {q['answer']}번")
 
     def main_menu(self):
         while True:
-            print("\n[메뉴] 1.풀기 2.추가 3.목록 4.점수 5.오답 6.종료")
+            print("\n=== 퀴즈 시스템 메뉴 ===")
+            print("1. 퀴즈 풀기")
+            print("2. 퀴즈 추가")
+            print("3. 퀴즈 목록")
+            print("4. 점수 기록")
+            print("5. 오답 노트")
+            print("6. 종료")
+            
             choice = input("선택: ").strip()
-            if choice == '1': self.run_quiz()
-            elif choice == '2': self.add_quiz()
-            elif choice == '3': self.list_quizzes()
-            elif choice == '4': self.show_scores()
-            elif choice == '5': self.show_wrong_answers()
-            elif choice == '6': 
-                print("학습을 종료합니다. 수고하셨어요! 👋")
+            if choice == '1':
+                self.run_quiz()
+            elif choice == '2':
+                self.add_quiz()
+            elif choice == '3':
+                self.list_quizzes()
+            elif choice == '4':
+                self.show_scores()
+            elif choice == '5':
+                self.show_wrong_answers()
+            elif choice == '6':
+                print("프로그램을 종료합니다.")
                 break
+            else:
+                print("오류: 1~6 사이의 숫자를 입력해주세요.")
 
 if __name__ == "__main__":
     QuizSystem().main_menu()
