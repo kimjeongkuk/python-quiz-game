@@ -8,11 +8,12 @@
 - **기초 문법**: 변수, 자료형, 조건문, 반복문 활용
 - **함수 활용**: 재사용 가능한 코드 작성 및 매개변수 처리
 - **데이터 처리**: 리스트, 딕셔너리 등 자료구조 활용 연습
+- **카테고리 활용**: 난이도에 따라 카테고리에 맞는 문제 내기
 - **[*5가지 간단한 상식 문제 퀴즈 맞추기*]**
 
 ## 3. 개발 환경
 - **Language**: Python 3.x
-- **IDE**: [*VS Code, PyCharm, Google Colab, IDLEIDE: VS Code(Visual Studio Code), Jupyter Notebook 사용*]
+- **IDE**: [*VS Code*]
 
 ## 4. 실행 방법
 터미널 또는 커맨드 창에서 아래 명령어를 입력하여 실행할 수 있습니다.
@@ -38,6 +39,15 @@ python3 [*main*].py
                 print(f"   => 정답: {q['answer']}번")를 한 줄 적어주세요. (예: `리스트를 활용한 데이터 관리`)
 
 2.  **3번 항목**: 사용했던 프로그램 이름은
-          [*VS Code, PyCharm, Google Colab, IDLEIDE: VS Code(Visual Studio Code), Jupyter Notebook 사용*]을 적어주세요.
+          [*VS Code]
+
 3.  **5번 항목**: 공부하면서 느꼈던 솔직한 기분은
           프로그램 로직에 대한 생각을 그대로 프로그램에 구현하는 과정 문법 등이 아직은 초보 수준입니다.
+
+4. **실행 프로그램을 run하면 나오는 화면 캠처 내용:
+  - 초기 화면
+  ![초기 화면](./images/initial_screen.png)
+
+
+
+
