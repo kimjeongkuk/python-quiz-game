@@ -46,11 +46,27 @@ python3 [*main*].py
           프로그램 로직에 대한 생각을 그대로 프로그램에 구현하는 과정 문법 등이 아직은 초보 수준입니다.
 
 4. **실행 프로그램을 run하면 나오는 화면 캠처 내용:
-  - 초기 화면  
+  - 초기 화면:  
   ![초기 화면](./images/initial_screen.png)
 
-  - 
+
+  - 1. 퀴즈 풀기:   
+   ![초기 화면](./images/1_group_screen.png)2
+
+  - 2. 퀴즈 추가:   
+   ![초기 화면](./images/2_group_screen.png)
+
+  - 3. 퀴즈 목록:   
+   ![초기 화면](./images/3_group_screen.png)
+
+  - 4. 퀴즈 기록:   
+   ![초기 화면](./images/4_group_screen.png)
+
+  - 5. 오답 노트:   
+   ![초기 화면](./images/5_group_screen.png)
+
+  - 6. 종료:   
+   ![초기 화면](./images/6_group_screen.png)
 
 
-
-
+                                                                                             - 감사합니다.
