@@ -102,12 +102,14 @@ python3 [*main*].py
 - ![git_log_1](./images/evol-1.png)
 
 
+
+
 평가 항목 #5
 부족한 점
 원격 GitHub 업로드 및 최소 10회 의미있는 커밋 증빙이 제출되지 않음
 보완
 원격 저장소 URL과 커밋 로그(또는 GitHub 링크)를 README에 추가하세요
-
+- ![git_log_1](./images/evol-2.png)
 
 
 평가 항목 #6
