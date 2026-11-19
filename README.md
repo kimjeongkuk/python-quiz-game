@@ -109,6 +109,7 @@ python3 [*main*].py
 원격 GitHub 업로드 및 최소 10회 의미있는 커밋 증빙이 제출되지 않음
 보완
 원격 저장소 URL과 커밋 로그(또는 GitHub 링크)를 README에 추가하세요
+
 - ![git_log_1](./images/evol-2.png)
 
 
@@ -118,6 +119,7 @@ python3 [*main*].py
 보완
 git log --graph 또는 GitHub의 PR/merge 캡처를 첨부하세요
 
+- ![git_log_1](./images/evol-6.png)
 
 
 
@@ -131,6 +133,7 @@ clone/pull 실습(명령어 + 실행 스크린샷) 증빙이 없음
 보완
 git clone/pull 명령과 해당 터미널 스크린샷을 추가하세요
 
+- ![git_log_1](./images/evol-7.png)
 
 
 
@@ -144,7 +147,8 @@ Quiz 역할과 Game(전체) 역할을 문서로 분리·설명하지 않았음
 보완
 각 클래스의 책임(특히 Quiz vs Game)을 README에 명확히 기술하세요
 
-
+- 답변: 본 미션 수행은 실제 main.py에 현재 QuizSystem이 두 책임을 함께 담당하고 있습니다.
+향후 Quiz 클래스와 Game 클래스로 책임을 분리하는 형태로 코딩을 하겠습니다.
 
 
 
