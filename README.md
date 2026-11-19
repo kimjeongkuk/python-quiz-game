@@ -104,6 +104,14 @@ python3 [*main*].py
 - ![git_log_1](./images/evol-1.png)
 
 
+평가 항목 #3
+부족한 점
+추가문항은 저장되나 '최고점'을 별도 보존·갱신하는 로직이 없음
+보완
+최고점 보존이 요구라면 최고점 계산 및 별도 저장 시점을 문서화하세요
+
+- 답변:
+- ![git_log_1](./images/evol-3.png)
 
 
 평가 항목 #5
@@ -126,7 +134,6 @@ git log --graph 또는 GitHub의 PR/merge 캡처를 첨부하세요
 - ![git_log_1](./images/evol-6.png)
 
 
-
 평가 항목 #7
 근거
 README.md > './images/initial_screen.png'
@@ -141,7 +148,6 @@ git clone/pull 명령과 해당 터미널 스크린샷을 추가하세요
 - ![git_log_1](./images/evol-7.png)
 
 
-
 평가 항목 #8
 근거
 main.py > 'class QuizSystem:'
@@ -154,7 +160,7 @@ Quiz 역할과 Game(전체) 역할을 문서로 분리·설명하지 않았음
 
 - 답변: 실제 main.py에 현재 QuizSystem이 두 책임을 함께 담당하고 있습니다.
 향후 Quiz 클래스와 Game 클래스로 책임을 분리하는 형태로 코딩을 하겠습니다.
-
+(README.md에만 반영 하겠습니다.)
 
 
 평가 항목 #9
@@ -186,7 +192,6 @@ state.json(또는 사용중인 파일)에 대한 로드·저장 시점과 순서
 - 답변: 실제 코드는 "state.json 대신 quizzes.json / wrong_answers.json / scores.json으로 분리 운영 중" 입니다.
 
 
-
 평가 항목 #11
 근거
 main.py > 'elif choice == \'6\':\n print("프로그램을 종료합니다.")'
@@ -198,6 +203,7 @@ main.py > 'elif choice == \'6\':\n print("프로그램을 종료합니다.")'
 프로그램 종료(시그널) 처리 및 안전 저장 흐름을 구현하거나 문서화하세요
 
 - 답변: 실제 코드는 현재 main.py의 구조(load_json, save_json, run_quiz, add_quiz, main_menu)를 크게 해치지 않으면서 SIGINT(Ctrl+C)를 잡거나 예외 발생 시 안전하게 종료·저장하도록 보완할 수 있습니다.
+(README.md에만 반영 하겠습니다.)
 
 
 평가 항목 #12
@@ -207,6 +213,7 @@ main.py > 'elif choice == \'6\':\n print("프로그램을 종료합니다.")'
 커밋 템플릿과 권장 단위 규칙을 README에 추가하세요
 
 -답변: 기존에 `git commit -m "update"`처럼 짧게 남겼던 이력을 단순 "update"` 대신 변경 대상과 목적을 드러내는 요약 문구를 추가해서 문서의 실효성을 높이겠습니다.
+(README.md에만 반영 하겠습니다.)
 
 
 평가 항목 #13
@@ -227,7 +234,7 @@ main.py > 'class QuizSystem:'
 2. 재사용성 및 확장성 근거
 - 다중 인스턴스 생성 가능성은 현재 `__init__`에서 기본 파일명(`quizzes.json`, `wrong_answers.json`, `scores.json`)을 설정하지만 생성자 매개변수로 확장하면 과목별·주제별 퀴즈 시스템 인스턴스를 독립된 데이터 파일로 여러 개 생성해 재사용할 수 있습니다.
 - 테스트 및 기능 확장 용이성은 퀴즈 로직과 상태가 객체 단위로 캡슐화되어 있어, 향후 GUI/웹 인터페이스 연결, 오답 복습 전용 모드 추가, 또는 개별 메서드 단위 검증·리팩터링을 진행할 때 기존 흐름을 덜 깨뜨리고 확장할 수 있습니다.
-
+(README.md에만 반영 하겠습니다.)
 
 
 평가 항목 #14
@@ -251,7 +258,7 @@ JSON 저장 선택 근거(가독성·확장성 등)를 README에 추가하세요
    - `indent=4`와 `ensure_ascii=False` 옵션을 적용해 저장하므로[cite: 1], 개발자나 사용자가 에디터로 `quizzes.json`, `wrong_answers.json`, `scores.json` 파일을 직접 열어 한글 문항과 저장 상태를 한눈에 확인하고 검증하기 쉽습니다[cite: 1].
 4. **스키마 확장성**
    - 추후 문항별로 난이도(`difficulty`), 카테고리(`category`), 해설(`explanation`) 같은 필드를 추가하더라도 기존 구조의 큰 변경 없이 키(key)만 확장하면 되므로 유지보수에 유리합니다.
-
+(README.md에만 반영 하겠습니다.)
 
 
 평가 항목 #15
@@ -269,12 +276,14 @@ main.py > 'except Exception:\n return []'
 
 현재 `load_json`은 예외 발생 시 빈 리스트(`[]`)를 반환해 프로그램의 비정상 종료를 방지합니다.
 안정성과 데이터 보존을 높이기 위해 파일 입출력 오류 유형별 처리 기준과 복구 절차(백업·재시도)를 다음과 같이 설계합니다.
+(README.md에만 반영 하겠습니다.)
 
 1. 오류 유형별 처리 기준
  - `FileNotFoundError` (파일 미존재) | 최초 실행 또는 데이터 파일이 삭제된 경우 | 정상적인 초기 상태로 간주하고 빈 리스트(`[]`)로 초기화한 뒤, 다음 저장 시 새 파일을 생성합니다.
  - `json.JSONDecodeError` / `UnicodeDecodeError` (파일 손상·인코딩 오류) | 비정상 종료나 수동 편집으로 JSON 형식이 깨진 경우 | 손상된 파일을 덮어쓰지 않도록 백업 파일(`.bak`)로 격리 보존한 뒤, 기본값(`[]`)으로 복구하여 실행을 이어갑니다.
  - `PermissionError` (접근 권한 부족) | 파일이 읽기 전용이거나 다른 프로세스가 점유 중인 경우 | 사용자에게 권한·잠금 확인 안내 메시지를 출력하고, 저장 시에는 임시 경로 또는 재시도 절차를 수행합니다.
  - `OSError` / `IOError` (디스크 용량 부족·경로 오류 등) | 저장 매체 공간 부족이나 유효하지 않은 경로 접근 시 | 오류 원인을 터미널에 명확히 알리고, 일시적 오류에 대비해 제한된 횟수만큼 재시도한 뒤 실패 시 안전하게 안내합니다.
+ (README.md에만 반영 하겠습니다.)
 
 2. 데이터 복구 및 안전 저장 절차 (백업 · 재시도)
 1) 손상 파일 백업 격리 (로드 시 복구)
@@ -284,6 +293,7 @@ main.py > 'except Exception:\n return []'
    - 기존 파일이 존재하면 저장 직전 `.bak` 백업본을 갱신하고, 임시 파일(`.tmp`)에 먼저 기록한 뒤 원본 파일로 교체해 쓰기 도중 중단되어도 기존 데이터가 깨지지 않도록 보호합니다.
 3) 제한적 재시도 (Retry)
    - 파일 잠금(`PermissionError`)이나 일시적 `OSError` 발생 시 짧은 대기 후 최대 2~3회 재시도하며, 모두 실패하면 오류 메시지와 백업 파일 위치를 안내합니다.
+(README.md에만 반영 하겠습니다.)
 
 
 평가 항목 #16
@@ -298,6 +308,7 @@ main.py > 'for i, quiz in enumerate(self.quizzes, 1):'
 
 - 답변:
 향후에는 실제 main.py에서 wrong_data = [q for q in wrong_data if q['question'] != quiz['question']]처럼 리스트 전체를 훑으며 비교하는 부분과, save_json이 파일 전체를 덮어쓰는 부분을 짚어 주면 근거 코드(for i, quiz in enumerate(self.quizzes, 1): 등)와 자연스럽게 연결되도록 하겠습니다.
+(README.md에만 반영 하겠습니다.)
 
 작성 후 git add README.md → git commit -m "docs: README에 대규모 데이터 처리 및 확장 계획 추가" → git push 순서로 저장소에 반영 했습니다.
 
@@ -318,3 +329,20 @@ state.json 손상 시 백업·초기화·복구 절차(자동백업 등)가 정�
 저장소에 이미 존재하는 오답 파일명(wrong_notes.json 또는 wrong_answers.json)과 main.py의 self.wrong_file 값이 다르면 한쪽으로 통일해 둠으로써 혼동을 줄이도록 하겠습니다.
 
 backups/ 폴더를 만든 경우, 불필요한 백업 파일이 깃허브에 쌓이지 않도록 .gitignore에 backups/와 *.corrupt를 추가할지 여부도 함께 점검해 보겠습니다.
+
+(README.md에만 반영 하겠습니다.)
+
+
+평가 항목 #18
+근거
+main.py > 'final_score = (score / len(self.quizzes)) * 100'
+잘한 점
+점수 계산이 한곳(run_quiz)에서 수행되어 수정 지점이 명확함
+부족한 점
+요구 변경 시 수정 대상(점수계산 메서드·퀴즈 모델·저장소)에 대한 문서화가 부족함
+보완
+요구 변경 시 영향 범위(메서드/모델/저장소)를 README에 명확히 기술하세요
+
+- 답변:
+평가 근거에 언급된 'final_score = (score / len(self.quizzes)) * 100'가 run_quiz 한곳에 모여 있다는 장점을 살려, "점수 규칙 변경 시 run_quiz만 고치면 되지만, 문항별 배점·속성이나 저장 구조까지 바뀌면 모델과 JSON 파일까지 함께 수정해야 합니다.
+(README.md에만 반영 하겠습니다.)
