@@ -99,6 +99,8 @@ python3 [*main*].py
 ## 평가 결과 보완 사항 ##
 
 #1 실행(런타임) 증거(로그/스크린샷)가 제출되지 않았음     
+
+-답변:
 - ![git_log_1](./images/evol-1.png)
 
 
@@ -110,6 +112,7 @@ python3 [*main*].py
 보완
 원격 저장소 URL과 커밋 로그(또는 GitHub 링크)를 README에 추가하세요
 
+- 답변:
 - ![git_log_1](./images/evol-2.png)
 
 
@@ -119,6 +122,7 @@ python3 [*main*].py
 보완
 git log --graph 또는 GitHub의 PR/merge 캡처를 첨부하세요
 
+- 답변: 
 - ![git_log_1](./images/evol-6.png)
 
 
@@ -133,6 +137,7 @@ clone/pull 실습(명령어 + 실행 스크린샷) 증빙이 없음
 보완
 git clone/pull 명령과 해당 터미널 스크린샷을 추가하세요
 
+- 답변:
 - ![git_log_1](./images/evol-7.png)
 
 
@@ -147,7 +152,7 @@ Quiz 역할과 Game(전체) 역할을 문서로 분리·설명하지 않았음
 보완
 각 클래스의 책임(특히 Quiz vs Game)을 README에 명확히 기술하세요
 
-- 답변: 본 미션 수행은 실제 main.py에 현재 QuizSystem이 두 책임을 함께 담당하고 있습니다.
+- 답변: 실제 main.py에 현재 QuizSystem이 두 책임을 함께 담당하고 있습니다.
 향후 Quiz 클래스와 Game 클래스로 책임을 분리하는 형태로 코딩을 하겠습니다.
 
 
@@ -162,7 +167,10 @@ main.py > 'def load_json(self, filename):'
 보완
 README에 각 로직(입력검증/진행/IO)의 책임과 인터페이스를 서술하세요
 
+- 답변: 실제 코드에서 입력 검증이 별도 함수(def validate_...)로 분리되어 있지 않고 add_quiz와 main_menu 안에 들어 있습니다.
 
+- 답변:
+- ![git_log_1](./images/evol-9.png)
 
 
 평가 항목 #10
@@ -175,6 +183,7 @@ main.py > 'self.quiz_file = \'quizzes.json\''
 보완
 state.json(또는 사용중인 파일)에 대한 로드·저장 시점과 순서를 README에 명시하세요
 
+- 답변: 실제 코드는 "state.json 대신 quizzes.json / wrong_answers.json / scores.json으로 분리 운영 중" 입니다.
 
 
 
@@ -188,7 +197,7 @@ main.py > 'elif choice == \'6\':\n print("프로그램을 종료합니다.")'
 보완
 프로그램 종료(시그널) 처리 및 안전 저장 흐름을 구현하거나 문서화하세요
 
-
+- 답변: 실제 코드는 현재 main.py의 구조(load_json, save_json, run_quiz, add_quiz, main_menu)를 크게 해치지 않으면서 SIGINT(Ctrl+C)를 잡거나 예외 발생 시 안전하게 종료·저장하도록 보완할 수 있습니다.
 
 
 평가 항목 #12
@@ -197,7 +206,7 @@ main.py > 'elif choice == \'6\':\n print("프로그램을 종료합니다.")'
 보완
 커밋 템플릿과 권장 단위 규칙을 README에 추가하세요
 
-
+-답변: 기존에 `git commit -m "update"`처럼 짧게 남겼던 이력을 단순 "update"` 대신 변경 대상과 목적을 드러내는 요약 문구를 추가해서 문서의 실효성을 높이겠습니다.
 
 
 평가 항목 #13
@@ -210,6 +219,14 @@ main.py > 'class QuizSystem:'
 보완
 클래스 설계 이유와 재사용성을 README에 기술하세요
 
+- 답변:
+상기 #8(Quiz vs Game 책임 분리), #9(I/O·검증·진행 인터페이스) 섹션의 답변 내용 외에
+1. 추상화 근거 (상태와 행위의 응집)
+- 파일 경로와 상태의 한곳 관리를위해 인스턴스 상태로 묶어, 각 메서드가 전역 변수나 파일명을 일일이 인자로 넘기지 않고도 일관된 상태에 접근할 수 있으며,
+- 세부 구현 숨김:, 호출부는 JSON 직렬화/역직렬화나 파일 존재 확인 같은 세부 구현을 직접 다루지 않고 `load_json`, `save_json` 및 기능 메서드를 통해 퀴즈 시스템의 동작 단위로 다룰 수 있습니다.
+2. 재사용성 및 확장성 근거
+- 다중 인스턴스 생성 가능성은 현재 `__init__`에서 기본 파일명(`quizzes.json`, `wrong_answers.json`, `scores.json`)을 설정하지만 생성자 매개변수로 확장하면 과목별·주제별 퀴즈 시스템 인스턴스를 독립된 데이터 파일로 여러 개 생성해 재사용할 수 있습니다.
+- 테스트 및 기능 확장 용이성은 퀴즈 로직과 상태가 객체 단위로 캡슐화되어 있어, 향후 GUI/웹 인터페이스 연결, 오답 복습 전용 모드 추가, 또는 개별 메서드 단위 검증·리팩터링을 진행할 때 기존 흐름을 덜 깨뜨리고 확장할 수 있습니다.
 
 
 
